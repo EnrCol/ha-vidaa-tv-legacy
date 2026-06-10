@@ -30,6 +30,10 @@ from .const import (
     CONF_MAC,
     CONF_MODEL,
     CONF_SW_VERSION,
+    CONF_AUTH_MODE,
+    AUTH_MODE_MODERN,
+    AUTH_MODE_LEGACY,
+    DEFAULT_AUTH_MODE,
     DEFAULT_NAME,
     DEFAULT_PORT,
     TIMEOUT_CONNECT,
@@ -81,6 +85,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._device_id: str | None = None
         self._model: str | None = None
         self._sw_version: str | None = None
+        self._auth_mode: str = DEFAULT_AUTH_MODE
         self._discovery_info: ssdp.SsdpServiceInfo | None = None
         self._pin_attempts: int = 0
         # Keep single client alive across steps for pairing
@@ -121,7 +126,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return AsyncVidaaTV(
             host=self._host,
             port=self._port,
-            use_dynamic_auth=True,
+            use_dynamic_auth=self._auth_mode != AUTH_MODE_LEGACY,
             mac_address=self._mac,
             enable_persistence=True,
             storage=self._get_storage(),
@@ -144,12 +149,17 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         {
                             vol.Required(CONF_HOST): str,
                             vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
+                            vol.Optional(CONF_AUTH_MODE, default=DEFAULT_AUTH_MODE): vol.In({
+                                AUTH_MODE_LEGACY: "Legacy Hisense / RemoteNOW",
+                                AUTH_MODE_MODERN: "Modern VIDAA token",
+                            }),
                         }
                     ),
                     errors=errors,
                 )
             self._host = host
             self._port = user_input.get(CONF_PORT, DEFAULT_PORT)
+            self._auth_mode = user_input.get(CONF_AUTH_MODE, DEFAULT_AUTH_MODE)
 
             # Resolve MAC from ARP
             self._mac = await self._async_resolve_mac()
@@ -268,6 +278,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                             CONF_DEVICE_ID: self._device_id,
                             CONF_MODEL: self._model,
                             CONF_SW_VERSION: self._sw_version,
+                            CONF_AUTH_MODE: self._auth_mode,
                         }
 
                         # Handle reauth
@@ -406,6 +417,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._port = entry_data.get(CONF_PORT, DEFAULT_PORT)
         self._mac = entry_data.get(CONF_MAC)
         self._device_id = entry_data.get(CONF_DEVICE_ID)
+        self._auth_mode = entry_data.get(CONF_AUTH_MODE, DEFAULT_AUTH_MODE)
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(

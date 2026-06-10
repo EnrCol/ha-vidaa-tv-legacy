@@ -14,6 +14,10 @@ CONF_NAME: Final = "name"
 CONF_DEVICE_ID: Final = "device_id"
 CONF_MODEL: Final = "model"
 CONF_SW_VERSION: Final = "sw_version"
+CONF_AUTH_MODE: Final = "auth_mode"
+AUTH_MODE_MODERN: Final = "modern"
+AUTH_MODE_LEGACY: Final = "legacy"
+DEFAULT_AUTH_MODE: Final = AUTH_MODE_LEGACY
 # Default values
 DEFAULT_PORT: Final = 36669
 DEFAULT_NAME: Final = "Vidaa TV"
