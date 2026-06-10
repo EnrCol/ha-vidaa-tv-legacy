@@ -19,6 +19,9 @@ from .const import (
     CONF_HOST,
     CONF_PORT,
     CONF_MAC,
+    CONF_AUTH_MODE,
+    AUTH_MODE_LEGACY,
+    DEFAULT_AUTH_MODE,
     DEFAULT_PORT,
     PLATFORMS,
     SERVICE_SEND_KEY,
@@ -61,8 +64,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: VidaaTVConfigEntry) -> b
     host = entry.data[CONF_HOST]
     port = entry.data.get(CONF_PORT, DEFAULT_PORT)
     mac = entry.data.get(CONF_MAC)
+    auth_mode = entry.data.get(CONF_AUTH_MODE, DEFAULT_AUTH_MODE)
 
-    _LOGGER.debug("Setting up Vidaa TV at %s:%s", host, port)
+    _LOGGER.debug("Setting up Vidaa TV at %s:%s with auth_mode=%s", host, port, auth_mode)
 
     # Set up token storage in HA config directory
     config_dir = Path(hass.config.config_dir)
@@ -73,7 +77,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: VidaaTVConfigEntry) -> b
         host=host,
         port=port,
         mac_address=mac,
-        use_dynamic_auth=True,
+        use_dynamic_auth=auth_mode != AUTH_MODE_LEGACY,
         enable_persistence=True,
         storage=storage,
     )

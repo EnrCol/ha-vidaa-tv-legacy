@@ -6,7 +6,11 @@
         "description": "Enter the IP address of your Hisense TV. Make sure the TV is powered on.",
         "data": {
           "host": "Host",
-          "port": "Port"
+          "port": "Port",
+          "auth_mode": "Authentication mode"
+        },
+        "data_description": {
+          "auth_mode": "Use Legacy Hisense / RemoteNOW for older TVs that show a PIN/code but do not use modern VIDAA token authentication."
         }
       },
       "confirm": {
