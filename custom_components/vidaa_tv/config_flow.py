@@ -113,6 +113,51 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _LOGGER.debug("Could not resolve MAC from ARP: %s", err)
         return None
 
+    @staticmethod
+    def _normalize_identifier(value: Any) -> str | None:
+        """Normalize MAC/device identifiers for duplicate checks."""
+        if not value:
+            return None
+        return str(value).replace(":", "").replace("-", "").strip().lower() or None
+
+    def _find_matching_configured_entry(self) -> config_entries.ConfigEntry | None:
+        """Find an existing entry for the same TV by host, MAC, or device ID."""
+        current_host = (self._host or "").strip().lower()
+        current_ids = {
+            ident
+            for ident in (
+                self._normalize_identifier(self._mac),
+                self._normalize_identifier(self._device_id),
+            )
+            if ident
+        }
+
+        for entry in self._async_current_entries():
+            data = entry.data or {}
+
+            entry_host = str(data.get(CONF_HOST, "")).strip().lower()
+            if current_host and entry_host and current_host == entry_host:
+                return entry
+
+            entry_ids = {
+                ident
+                for ident in (
+                    self._normalize_identifier(entry.unique_id),
+                    self._normalize_identifier(data.get(CONF_MAC)),
+                    self._normalize_identifier(data.get(CONF_DEVICE_ID)),
+                )
+                if ident
+            }
+            if current_ids and current_ids.intersection(entry_ids):
+                return entry
+
+        return None
+
+    def _abort_if_matching_entry_configured(self) -> None:
+        """Abort if this TV is already configured under a different discovery ID."""
+        if self._find_matching_configured_entry():
+            raise config_entries.AbortFlow("already_configured")
+
     def _get_storage(self) -> TokenStorage:
         """Get token storage in HA config directory."""
         config_dir = Path(self.hass.config.config_dir)
@@ -351,15 +396,27 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._discovery_info = discovery_info
         self._name = discovery_info.upnp.get("friendlyName", DEFAULT_NAME)
 
-        # Set unique ID from USN
-        usn = discovery_info.ssdp_usn
-        if usn:
-            if "::" in usn:
-                unique_id = usn.split("::")[0].replace("uuid:", "")
-            else:
-                unique_id = usn.replace("uuid:", "")
-            await self.async_set_unique_id(unique_id)
+        # First abort by host if the TV is already configured manually.
+        self._abort_if_matching_entry_configured()
+
+        # Prefer MAC as stable unique ID. Some legacy TVs advertise a different
+        # SSDP UUID, which otherwise creates a duplicate empty/configurable device.
+        self._mac = await self._async_resolve_mac()
+        if self._mac:
+            self._device_id = self._mac
+            self._abort_if_matching_entry_configured()
+            await self.async_set_unique_id(self._mac.replace(":", "").lower())
             self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
+        else:
+            # Fallback to SSDP USN only when no MAC/host match is available.
+            usn = discovery_info.ssdp_usn
+            if usn:
+                if "::" in usn:
+                    unique_id = usn.split("::")[0].replace("uuid:", "")
+                else:
+                    unique_id = usn.replace("uuid:", "")
+                await self.async_set_unique_id(unique_id)
+                self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
 
         return await self.async_step_confirm()
 
@@ -390,6 +447,15 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     if info_mac:
                         self._mac = info_mac
                         self._device_id = self._mac
+
+                if self._device_id:
+                    self._abort_if_matching_entry_configured()
+                    await self.async_set_unique_id(
+                        self._device_id.replace(":", "").lower()
+                    )
+                    self._abort_if_unique_id_configured(
+                        updates={CONF_HOST: self._host, CONF_PORT: self._port}
+                    )
 
                 await self._tv.async_start_pairing()
                 await asyncio.sleep(1)
