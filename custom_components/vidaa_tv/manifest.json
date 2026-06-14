@@ -2,14 +2,14 @@
   "domain": "vidaa_tv",
   "name": "Vidaa TV",
   "codeowners": [
-    "@tombabolewski"
+    "@EnrCol"
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/tombabolewski/ha-vidaa-tv",
+  "documentation": "https://github.com/EnrCol/ha-vidaa-tv-legacy",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/tombabolewski/ha-vidaa-tv/issues",
+  "issue_tracker": "https://github.com/EnrCol/ha-vidaa-tv-legacy/issues",
   "requirements": [
     "vidaa-control==1.1.0"
   ],

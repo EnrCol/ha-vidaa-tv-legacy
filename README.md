@@ -1,8 +1,10 @@
-# Vidaa TV - Home Assistant Integration
+# Vidaa TV Legacy - Unofficial Home Assistant Integration Fork
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-Home Assistant custom component for controlling Hisense/Vidaa Smart TVs. Communicates directly with the TV's built-in SSL broker — no cloud, no MQTT bridge needed.
+Unofficial fork of the Home Assistant custom component for controlling Hisense / VIDAA Smart TVs. This fork is adapted for legacy Hisense / VIDAA models that are not handled well by the original integration.
+
+It communicates directly with the TV's built-in SSL broker — no cloud, no MQTT bridge needed. The original project remains the upstream base, but legacy behavior and fork-specific issues are not supported by the upstream maintainer.
 
 ## Features
 
@@ -44,8 +46,12 @@ Disabled-by-default buttons (enable from device page): color buttons (red/green/
 
 1. Go to **Settings** > **Integrations** > **Add Integration** > **Vidaa TV**
 2. Enter your TV's IP address (or wait for SSDP auto-discovery)
-3. A PIN will appear on your TV — enter it in the HA UI
-4. Done. All entities appear under the device.
+3. Select the authentication mode:
+   - **Legacy Hisense / RemoteNOW**: for older TVs that show a PIN/code but do not use modern VIDAA token authentication. This is the default in this fork.
+   - **Modern VIDAA token**: for newer VIDAA TVs compatible with the original token-based flow.
+4. Keep **Legacy Hisense / RemoteNOW** unless your TV is known to work with the modern VIDAA token flow.
+5. A PIN will appear on your TV — enter it in the HA UI
+6. Done. All entities appear under the device.
 
 No certificates or manual config needed — the library handles authentication automatically.
 
@@ -79,6 +85,8 @@ Copy the YAML into a manual card. Adjust entity IDs to match your TV's name.
 ## Library
 
 This integration uses [vidaa-control](https://pypi.org/project/vidaa-control/) ([source](https://github.com/tombabolewski/vidaa-control)) — a standalone Python library for Vidaa TV communication.
+
+The original Home Assistant custom component is [ha-vidaa-tv](https://github.com/tombabolewski/ha-vidaa-tv) by Tomasz Babolewski. Use that repository for the upstream project only; fork-specific legacy behavior and bugs should be reported on this fork, not upstream.
 
 ## License
 

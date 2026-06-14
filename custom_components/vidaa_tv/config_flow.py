@@ -177,6 +177,21 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             storage=self._get_storage(),
         )
 
+    def _user_schema(self) -> vol.Schema:
+        """Return the schema for manual setup."""
+        return vol.Schema(
+            {
+                vol.Required(CONF_HOST): str,
+                vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
+                vol.Optional(CONF_AUTH_MODE, default=DEFAULT_AUTH_MODE): vol.In(
+                    {
+                        AUTH_MODE_LEGACY: "Legacy Hisense / RemoteNOW",
+                        AUTH_MODE_MODERN: "Modern VIDAA token",
+                    }
+                ),
+            }
+        )
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -190,16 +205,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_host"
                 return self.async_show_form(
                     step_id="user",
-                    data_schema=vol.Schema(
-                        {
-                            vol.Required(CONF_HOST): str,
-                            vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
-                            vol.Optional(CONF_AUTH_MODE, default=DEFAULT_AUTH_MODE): vol.In({
-                                AUTH_MODE_LEGACY: "Legacy Hisense / RemoteNOW",
-                                AUTH_MODE_MODERN: "Modern VIDAA token",
-                            }),
-                        }
-                    ),
+                    data_schema=self._user_schema(),
                     errors=errors,
                 )
             self._host = host
@@ -255,12 +261,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_HOST): str,
-                    vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
-                }
-            ),
+            data_schema=self._user_schema(),
             errors=errors,
         )
 

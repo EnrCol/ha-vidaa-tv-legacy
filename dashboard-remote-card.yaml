@@ -1,6 +1,6 @@
 # Vidaa TV Remote Card for Home Assistant Dashboard
 # Copy this into a manual card or dashboard YAML.
-# Entity IDs use the TV's name slug (e.g. "telewizor").
+# Entity IDs use the TV's name slug (e.g. "my_tv").
 # Adjust if your TV has a different name.
 
 type: vertical-stack
@@ -9,7 +9,7 @@ cards:
   - type: horizontal-stack
     cards:
       - type: button
-        entity: button.telewizor_power
+        entity: button.my_tv_power
         icon: mdi:power
         name: Power
         tap_action:
@@ -17,7 +17,7 @@ cards:
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_info
+        entity: button.my_tv_info
         icon: mdi:information
         name: Info
         tap_action:
@@ -25,7 +25,7 @@ cards:
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_home
+        entity: button.my_tv_home
         icon: mdi:home
         name: Home
         tap_action:
@@ -43,7 +43,7 @@ cards:
         show_state: false
         show_icon: false
       - type: button
-        entity: button.telewizor_up
+        entity: button.my_tv_up
         icon: mdi:arrow-up
         tap_action:
           action: toggle
@@ -60,21 +60,21 @@ cards:
   - type: horizontal-stack
     cards:
       - type: button
-        entity: button.telewizor_left
+        entity: button.my_tv_left
         icon: mdi:arrow-left
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_ok
+        entity: button.my_tv_ok
         icon: mdi:checkbox-blank-circle
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_right
+        entity: button.my_tv_right
         icon: mdi:arrow-right
         tap_action:
           action: toggle
@@ -91,7 +91,7 @@ cards:
         show_state: false
         show_icon: false
       - type: button
-        entity: button.telewizor_down
+        entity: button.my_tv_down
         icon: mdi:arrow-down
         tap_action:
           action: toggle
@@ -108,7 +108,7 @@ cards:
   - type: horizontal-stack
     cards:
       - type: button
-        entity: button.telewizor_back
+        entity: button.my_tv_back
         icon: mdi:arrow-u-left-top
         name: Back
         tap_action:
@@ -116,7 +116,7 @@ cards:
         show_name: true
         show_state: false
       - type: button
-        entity: button.telewizor_menu
+        entity: button.my_tv_menu
         icon: mdi:menu
         name: Menu
         tap_action:
@@ -124,7 +124,7 @@ cards:
         show_name: true
         show_state: false
       - type: button
-        entity: button.telewizor_exit
+        entity: button.my_tv_exit
         icon: mdi:close-box
         name: Exit
         tap_action:
@@ -136,7 +136,7 @@ cards:
   - type: horizontal-stack
     cards:
       - type: button
-        entity: button.telewizor_channel_up
+        entity: button.my_tv_channel_up
         icon: mdi:arrow-up-bold
         name: CH+
         tap_action:
@@ -144,7 +144,7 @@ cards:
         show_name: true
         show_state: false
       - type: button
-        entity: switch.telewizor_mute
+        entity: switch.my_tv_mute
         icon: mdi:volume-off
         name: Mute
         tap_action:
@@ -152,7 +152,7 @@ cards:
         show_name: true
         show_state: false
       - type: button
-        entity: button.telewizor_channel_down
+        entity: button.my_tv_channel_down
         icon: mdi:arrow-down-bold
         name: CH-
         tap_action:
@@ -162,41 +162,41 @@ cards:
 
   # Media player card with volume slider
   - type: media-control
-    entity: media_player.telewizor
+    entity: media_player.my_tv
 
   # Playback row
   - type: horizontal-stack
     cards:
       - type: button
-        entity: button.telewizor_rewind
+        entity: button.my_tv_rewind
         icon: mdi:rewind
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_play
+        entity: button.my_tv_play
         icon: mdi:play
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_pause
+        entity: button.my_tv_pause
         icon: mdi:pause
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_stop
+        entity: button.my_tv_stop
         icon: mdi:stop
         tap_action:
           action: toggle
         show_name: false
         show_state: false
       - type: button
-        entity: button.telewizor_fast_forward
+        entity: button.my_tv_fast_forward
         icon: mdi:fast-forward
         tap_action:
           action: toggle
@@ -207,10 +207,10 @@ cards:
   - type: horizontal-stack
     cards:
       - type: entity
-        entity: sensor.telewizor_current_app
+        entity: sensor.my_tv_current_app
         name: App
         icon: mdi:apps
       - type: entity
-        entity: sensor.telewizor_current_source
+        entity: sensor.my_tv_current_source
         name: Source
         icon: mdi:video-input-hdmi
