@@ -10,7 +10,7 @@ import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError, ServiceValidationError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
@@ -82,20 +82,34 @@ async def async_setup_entry(hass: HomeAssistant, entry: VidaaTVConfigEntry) -> b
         storage=storage,
     )
 
-    # Try to connect
-    try:
-        connected = await tv.async_connect(timeout=10)
-        if not connected:
-            raise ConfigEntryNotReady("Failed to connect to TV")
-    except ConfigEntryNotReady:
-        raise
-    except Exception as err:
-        _LOGGER.debug("Error connecting to TV: %s", err)
-        raise ConfigEntryNotReady("Error connecting to TV") from err
-
-    # Create coordinator for data updates
+    # Create coordinator for data updates.
+    #
+    # Do not fail config entry setup when the TV is off or in deep standby.
+    # Legacy Hisense TVs often close the remote-control port while powered off.
+    # Home Assistant should still create the entities and let the coordinator
+    # reconnect later when the TV becomes reachable.
     coordinator = VidaaTVDataUpdateCoordinator(hass, tv, entry)
-    await coordinator.async_config_entry_first_refresh()
+    coordinator.async_set_updated_data(
+        {
+            "is_on": False,
+            "state": None,
+            "statetype": None,
+            "volume": None,
+            "is_muted": False,
+            "app": None,
+            "source": None,
+        }
+    )
+    coordinator._available = False
+
+    try:
+        connected = await tv.async_connect(timeout=5)
+        if connected:
+            await coordinator.async_refresh()
+        else:
+            _LOGGER.debug("TV is not reachable during setup; continuing as off")
+    except Exception as err:
+        _LOGGER.debug("TV is not reachable during setup; continuing as off: %s", err)
 
     # Store runtime data
     entry.runtime_data = VidaaTVRuntimeData(coordinator=coordinator, tv=tv)
