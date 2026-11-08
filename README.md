@@ -2,7 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-Unofficial fork of the Home Assistant custom component for controlling Hisense / VIDAA Smart TVs. This fork is adapted for legacy Hisense / VIDAA models that are not handled well by the original integration.
+Unofficial fork of the Home Assistant custom component for controlling Hisense / VIDAA Smart TVs. This fork supports Hisense / VIDAA TVs using the legacy RemoteNOW authentication protocol, including transitional models that are not handled well by the original integration. Here, **legacy refers to the authentication protocol, not necessarily the TV's age**.
 
 It communicates directly with the TV's built-in SSL broker — no cloud, no MQTT bridge needed. The original project remains the upstream base, but legacy behavior and fork-specific issues are not supported by the upstream maintainer.
 
@@ -53,9 +53,9 @@ After updating an integration already loaded by Home Assistant, restart Home Ass
 1. Go to **Settings** > **Integrations** > **Add Integration** > **Vidaa TV**
 2. Enter your TV's IP address (or wait for SSDP auto-discovery)
 3. Select the authentication mode:
-   - **Legacy Hisense / RemoteNOW**: for older TVs that show a PIN/code but do not use modern VIDAA token authentication. This is the default in this fork.
+   - **Legacy Hisense / RemoteNOW**: for TVs using the RemoteNOW-compatible static MQTT/SSL authentication with on-screen PIN pairing, including transitional-generation models such as **Hisense 55A56FEVS**. These TVs do not use modern dynamic VIDAA token authentication. This is the default in this fork.
    - **Modern VIDAA token**: for newer VIDAA TVs compatible with the original token-based flow.
-4. Keep **Legacy Hisense / RemoteNOW** unless your TV is known to work with the modern VIDAA token flow.
+4. Keep **Legacy Hisense / RemoteNOW** for RemoteNOW/PIN-based TVs (including transitional models), regardless of their age. Select **Modern VIDAA token** only when supported by the TV.
 5. A PIN will appear on your TV — enter it in the HA UI
 6. Done. All entities appear under the device.
 
