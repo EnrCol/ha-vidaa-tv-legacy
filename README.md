@@ -42,6 +42,12 @@ Disabled-by-default buttons (enable from device page): color buttons (red/green/
 1. Copy `custom_components/vidaa_tv/` to your HA `config/custom_components/` directory
 2. Restart Home Assistant
 
+## Integration branding
+
+Since Home Assistant 2026.3, the icon shown for the installed integration is loaded from `custom_components/vidaa_tv/brand/icon.png` (256 × 256 PNG). The same existing artwork is retained as `icon.png` at the repository root for compatibility with repository listings and tooling. No logo or artificial upscaled `@2x` icon is needed: Home Assistant falls back to the regular icon.
+
+After updating an integration already loaded by Home Assistant, restart Home Assistant to load the updated integration files. TV pairing and configuration do not need to change.
+
 ## Setup
 
 1. Go to **Settings** > **Integrations** > **Add Integration** > **Vidaa TV**
