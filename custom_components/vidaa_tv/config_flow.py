@@ -11,7 +11,7 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant import config_entries
+from homeassistant import config_entries, data_entry_flow
 from homeassistant.components import ssdp
 from homeassistant.core import callback
 from homeassistant.config_entries import ConfigFlowResult
@@ -156,7 +156,7 @@ class VidaaTVConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def _abort_if_matching_entry_configured(self) -> None:
         """Abort if this TV is already configured under a different discovery ID."""
         if self._find_matching_configured_entry():
-            raise config_entries.AbortFlow("already_configured")
+            raise data_entry_flow.AbortFlow("already_configured")
 
     def _get_storage(self) -> TokenStorage:
         """Get token storage in HA config directory."""
